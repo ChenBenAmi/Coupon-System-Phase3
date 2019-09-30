@@ -20,7 +20,8 @@ import com.project.CouponSystem.beans.Coupon;
 import com.project.CouponSystem.beans.CouponType;
 import com.project.CouponSystem.services.CompanyService;
 
-@RestController("/company")
+@RestController
+@RequestMapping("/company")
 public class CompanyController {
 	@Autowired
 	private CompanyService companyService;

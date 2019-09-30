@@ -4,10 +4,12 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 import org.hibernate.validator.internal.IgnoreForbiddenApisErrors;
 
@@ -19,6 +21,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Entity
+@Table
 public class Company {
 
 	long id;
