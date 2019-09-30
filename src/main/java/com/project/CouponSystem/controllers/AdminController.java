@@ -1,5 +1,6 @@
 package com.project.CouponSystem.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.CouponSystem.beans.Company;
 import com.project.CouponSystem.beans.Customer;
+import com.project.CouponSystem.services.AdminService;
 
 @RestController("/admin")
 public class AdminController {
+	
+	@Autowired
+	private AdminService adminService;
 	
 	@GetMapping("getAllCompanies")
 	public ResponseEntity<Object> getAllCompanies(@RequestParam long adminId) {
