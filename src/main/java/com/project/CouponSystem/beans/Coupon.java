@@ -3,6 +3,8 @@ package com.project.CouponSystem.beans;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -41,7 +43,7 @@ public class Coupon {
 	public int getAmount() {
 		return amount;
 	}
-	@Column
+	@Enumerated(EnumType.STRING)
 	public CouponType getCouponType() {
 		return couponType;
 	}
