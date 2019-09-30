@@ -20,24 +20,24 @@ public class CustomerController {
 	private CustomerService customerService;
 
 	@PutMapping("/purchaseCoupon")
-	public ResponseEntity<Object> purchaseCoupon(@RequestParam long customerId, @RequestParam long couponId) {
-
-		return null;
+	public ResponseEntity<Object> purchaseCoupon(@PathVariable String token, @RequestParam long couponId) {
+		return customerService.purchaseCoupon(token, couponId);
+		
 	}
 
 	@GetMapping("/hitory")
-	public ResponseEntity<Object> getAllHistory(@RequestParam long customerId) {
-		return null;
+	public ResponseEntity<Object> getAllHistory(@PathVariable String token) {
+		return customerService.getAllHistory(token);
 	}
 
 	@GetMapping("/hitory/{couponType}")
-	public ResponseEntity<Object> getHistoryByType(@RequestParam long customerId, @PathVariable CouponType couponType) {
-		return null;
+	public ResponseEntity<Object> getHistoryByType(@PathVariable String token, @PathVariable CouponType couponType) {
+		return customerService.getHistoryByType(token, couponType);
 	}
 
 	@GetMapping("/hitory/{price}")
-	public ResponseEntity<Object> getHistoryByType(@RequestParam long customerId, @PathVariable double price) {
-		return null;
+	public ResponseEntity<Object> getHistoryByPrice(@PathVariable String token, @PathVariable double price) {
+		return customerService.getHistoryByPrice(token, price);
 	}
 
 }

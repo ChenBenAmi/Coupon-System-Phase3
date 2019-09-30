@@ -1,106 +1,144 @@
 package com.project.CouponSystem.services;
 
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
+import com.project.CouponSystem.beans.ClientType;
 import com.project.CouponSystem.beans.Company;
 import com.project.CouponSystem.beans.Customer;
 import com.project.CouponSystem.repo.CompanyRepo;
-import com.project.CouponSystem.repo.CouponRepo;
 import com.project.CouponSystem.repo.CustomerRepo;
+
 @Service
 @Transactional
-public class AdminService {
+public class AdminService implements CouponClient {
 
 	@Autowired
 	private CustomerRepo customerRepo;
-	@Autowired
-	private CouponRepo couponRepo;
+	
 	@Autowired
 	private CompanyRepo companyRepo;
-	
-	public ResponseEntity<Object> getAllCompanies(@RequestParam long adminId) {
-		Company admin=companyRepo.findCompanyById(adminId);
-		if (admin !=null) {
-			
+
+	private Map<String, Long> tokens = new Hashtable<>();
+
+	@Override
+	public ResponseEntity<?> login(String name, String password, ClientType clientType) {
+		if (name.equalsIgnoreCase("admin")) {
+			if (password.equalsIgnoreCase("1234")) {
+				String token = UUID.randomUUID().toString();
+				tokens.put(token,1L);
+				return ResponseEntity.ok("Logged in as "+clientType.toString()+" your token is: "+token);
+			}
 		}
-		return null;
+		return ResponseEntity.badRequest().body("User name or password incorrect");
 	}
 	
-	public ResponseEntity<Object> getCompany(@RequestParam long adminId,@RequestParam long companyId) {
-		Company admin=companyRepo.findCompanyById(adminId);
-		if (admin !=null) {
-			
+	@Override
+	public ResponseEntity<?> logout(String token) {
+		tokens.remove(token);
+		return ResponseEntity.ok("Logged out successfully");
+	}
+
+	@GetMapping("/getAllCompanies")
+	public ResponseEntity<Object> getAllCompanies(String token) {
+		if (tokens.containsKey(token)) {
+			return ResponseEntity.ok(companyRepo.findAll());
 		}
-		return null;
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
 	
-	public ResponseEntity<Object> addCompany(@RequestParam long adminId,@RequestBody Company company) {
-		Company admin=companyRepo.findCompanyById(adminId);
-		if (admin !=null) {
-			
+	@GetMapping("/getCompany")
+	public ResponseEntity<Object> getCompany( String token, long companyId) {
+		if (tokens.containsKey(token)) {
+			return ResponseEntity.ok(companyRepo.findCompanyById(companyId));
 		}
-		return null;
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
 	
-	public ResponseEntity<Object> deleteCompany(@RequestParam long adminId,@RequestParam long companyId) {
-		Company admin=companyRepo.findCompanyById(adminId);
-		if (admin !=null) {
-			
+	public ResponseEntity<Object> addCompany( String token, Company company) {
+		if (tokens.containsKey(token)) {
+			return ResponseEntity.ok(companyRepo.save(company));
 		}
-		return null;
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
 	
-	public ResponseEntity<Object> updateCompany(@RequestParam long adminId,@RequestBody Company company) {
-		Company admin=companyRepo.findCompanyById(adminId);
-		if (admin !=null) {
-			
+	public ResponseEntity<Object> deleteCompany( String token, long companyId) {
+		if (tokens.containsKey(token)) {
+			Optional<Company> cOptional=companyRepo.findById(companyId);
+			if (cOptional.isPresent()) {
+				companyRepo.deleteById(companyId);
+				return ResponseEntity.ok("Company with id "+companyId+" have been deleted");
+			}
+			return ResponseEntity.badRequest().body("No company with id "+companyId+" found");
 		}
-		return null;
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
 	
-	public ResponseEntity<Object> getAllCustomers(@RequestParam long adminId) {
-		Company admin=companyRepo.findCompanyById(adminId);
-		if (admin !=null) {
-			
+	public ResponseEntity<Object> updateCompany( String token, Company company) {
+		if (tokens.containsKey(token)) {
+			Optional<Company> cOptional=companyRepo.findById(company.getId());
+			if (cOptional.isPresent()) {
+				company.setCouponsCollection(cOptional.get().getCouponsCollection());
+				return ResponseEntity.ok(companyRepo.save(company));
+			}
+			return ResponseEntity.badRequest().body("No company with id "+company.getId()+" found");
 		}
-		return null;
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
 	
-	public ResponseEntity<Object> getCustomer(@RequestParam long adminId,@RequestParam long customerId) {
-		Company admin=companyRepo.findCompanyById(adminId);
-		if (admin !=null) {
-			
+	public ResponseEntity<Object> getAllCustomers( String token) {
+		if (tokens.containsKey(token)) {
+			return ResponseEntity.ok(customerRepo.findAll());
 		}
-		return null;
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
 	
-	public ResponseEntity<Object> addCustomer(@RequestParam long adminId,@RequestBody Customer customer) {
-		Company admin=companyRepo.findCompanyById(adminId);
-		if (admin !=null) {
-			
+	public ResponseEntity<Object> getCustomer( String token, long customerId) {
+		if (tokens.containsKey(token)) {
+			return ResponseEntity.ok(customerRepo.findCustomerById(customerId));
 		}
-		return null;
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
 	
-	public ResponseEntity<Object> deleteCustomer(@RequestParam long adminId,@RequestParam long customerId) {
-		Company admin=companyRepo.findCompanyById(adminId);
-		if (admin !=null) {
-			
+	public ResponseEntity<Object> addCustomer( String token, Customer customer) {
+		if (tokens.containsKey(token)) {
+			return ResponseEntity.ok(customerRepo.save(customer));
 		}
-		return null;
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
 	
-	public ResponseEntity<Object> updateCustomer(@RequestParam long adminId,@RequestBody Customer customer) {
-		Company admin=companyRepo.findCompanyById(adminId);
-		if (admin !=null) {
-			
+	public ResponseEntity<Object> deleteCustomer( String token, long customerId) {
+		if (tokens.containsKey(token)) {
+			Optional<Customer> cOptional=customerRepo.findById(customerId);
+			if (cOptional.isPresent()) {
+				companyRepo.deleteById(customerId);
+				return ResponseEntity.ok("Customer with id "+customerId+" have been deleted");
+			}
+			return ResponseEntity.badRequest().body("No customer with id "+customerId+" found");
 		}
-		return null;
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
 	
+	public ResponseEntity<Object> updateCustomer( String token, Customer customer) {
+		if (tokens.containsKey(token)) {
+			Optional<Customer> cOptional=customerRepo.findById(customer.getId());
+			if (cOptional.isPresent()) {
+				customer.setCouponsCollection(cOptional.get().getCouponsCollection());
+				return ResponseEntity.ok(customerRepo.save(customer));
+			}
+			return ResponseEntity.badRequest().body("No customer with id "+customer.getId()+" found");
+		}
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
+	}
+	
+
+	
+
 }
