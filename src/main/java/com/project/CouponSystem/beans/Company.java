@@ -20,36 +20,37 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class Company {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+
 	long id;
-	
 	private String compName;
 	private String password;
 	private String email;
 	private Map<Long, Coupon> couponsCollection = new Hashtable<>();
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	public long getId() {
 		return id;
 	}
-	@Column(unique = true,nullable=false)
+
+	@Column(unique = true, nullable = false)
 	public String getCompName() {
 		return compName;
 	}
+
 	@Column(nullable = false)
 	public String getPassword() {
 		return password;
 	}
-	@Column(nullable= false) 
+
+	@Column(nullable = false)
 	public String getEmail() {
 		return email;
 	}
+
 	@ManyToMany
 	public Map<Long, Coupon> getCouponsCollection() {
 		return couponsCollection;
 	}
-	
-	
-	
+
 }
