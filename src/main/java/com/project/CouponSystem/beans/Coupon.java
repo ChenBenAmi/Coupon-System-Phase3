@@ -27,7 +27,7 @@ public class Coupon {
 	public long getId() {
 		return id;
 	}
-	@Column
+	@Column(unique = true)
 	public String getTitle() {
 		return title;
 	}
