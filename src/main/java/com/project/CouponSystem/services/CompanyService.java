@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -42,69 +43,99 @@ public class CompanyService implements CouponClient {
 	
 	@Override
 	public ResponseEntity<?> logout(String token) {
-		return null;
+		tokens.remove(token);
+		return ResponseEntity.ok("Logged out successfully");
 	}
 	
-	public RequestEntity<Object> createCoupon(long compId, @RequestBody Coupon coupon) {
-		Company company = companyRepo.findCompanyById(compId);
+	public ResponseEntity<Object> createCoupon(String token, @RequestBody Coupon coupon) {
+		Company company = companyRepo.findCompanyById(tokens.get(token));
 		Coupon thisCoupon = couponRepo.findCouponById(coupon.getId());
+		if(tokens.containsKey(token)) {
 		if(company != null){
+			if(thisCoupon!=null) {
 			
+			company.getCouponsCollection().put(company.getId(), thisCoupon);
+			return ResponseEntity.ok("Coupon add Sucess");
+			}
+			else {
+				return ResponseEntity.badRequest().body("Cant find Coupon");
+
+			}
 		}
-		return null;
+		else {
+			return ResponseEntity.badRequest().body("Cant find Company");
+
+		}
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
+		}
 		
 	}
 
-	public RequestEntity<Object> deleteCoupon(long compId, long couponId) {
-		Company company = companyRepo.findCompanyById(compId);
+	public ResponseEntity<Object> deleteCoupon(String token, long couponId) {
+		Company company = companyRepo.findCompanyById(tokens.get(token));
+		if(tokens.containsKey(token)) {
+		if(company != null){
+			if(couponRepo.findCouponById(couponId)!=null) {
+				company.getCouponsCollection().remove(company.getId(),couponRepo.findCouponById(couponId));
+				couponRepo.deleteById(couponId);
+				return ResponseEntity.ok("Coupon Delete sucess");
+			}else {
+				return ResponseEntity.badRequest().body("Cant find Coupon");
+			}
+		}else {
+			return ResponseEntity.badRequest().body("Cant find Company");
+
+		}
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
+		}
+	}
+
+	public RequestEntity<Object> updateCoupon(String token, @RequestBody Coupon coupon) {
+		Company company = companyRepo.findCompanyById(tokens.get(token));
 		if(company != null){
 			
 		}
 		return null;
 	}
 
-	public RequestEntity<Object> updateCoupon(long compId, @RequestBody Coupon coupon) {
-		Company company = companyRepo.findCompanyById(compId);
+	public RequestEntity<Object> getCompany(String token) {
+		Company company = companyRepo.findCompanyById(tokens.get(token));
 		if(company != null){
 			
 		}
 		return null;
 	}
 
-	public RequestEntity<Object> getCompany(long compId) {
-		Company company = companyRepo.findCompanyById(compId);
+	public RequestEntity<Object> getAllCoupon(String token) {
+		Company company = companyRepo.findCompanyById(tokens.get(token));
 		if(company != null){
 			
 		}
 		return null;
 	}
 
-	public RequestEntity<Object> getAllCoupon(long compId) {
-		Company company = companyRepo.findCompanyById(compId);
+	public RequestEntity<Object> getCouponByType(String token, CouponType couponType) {
+		Company company = companyRepo.findCompanyById(tokens.get(token));
 		if(company != null){
 			
 		}
 		return null;
 	}
 
-	public RequestEntity<Object> getCouponByType(long compId, CouponType couponType) {
-		Company company = companyRepo.findCompanyById(compId);
+	public RequestEntity<Object> getCouponByPrice(String token, double price) {
+		Company company = companyRepo.findCompanyById(tokens.get(token));
 		if(company != null){
 			
 		}
 		return null;
 	}
 
-	public RequestEntity<Object> getCouponByPrice(long compId, double price) {
-		Company company = companyRepo.findCompanyById(compId);
-		if(company != null){
-			
-		}
-		return null;
-	}
-
-	public RequestEntity<Object> getCouponByDate(long compId, LocalDateTime localdatetime) {
-		Company company = companyRepo.findCompanyById(compId);
+	public RequestEntity<Object> getCouponByDate(String token, LocalDateTime localdatetime) {
+		Company company = companyRepo.findCompanyById(tokens.get(token));
 		if(company != null){
 			
 		}
