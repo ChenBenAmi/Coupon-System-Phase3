@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,42 +25,41 @@ public class CompanyController {
 	private CompanyService companyService;
 
 	@PostMapping("/createCoupon")
-	public RequestEntity<Object> createCoupon(@RequestParam long compId, @RequestBody Coupon coupon) {
-		return null;
+	public ResponseEntity<Object> createCoupon(@RequestParam String token, @RequestBody Coupon coupon) {
+		return companyService.createCoupon(token, coupon);
 	}
 
 	@DeleteMapping("/deleteCoupon")
-	public RequestEntity<Object> deleteCoupon(@RequestParam long compId, @RequestParam long couponId) {
-		return null;
+	public ResponseEntity<Object> deleteCoupon(@RequestParam String token, @RequestParam long couponId) {
+		return companyService.deleteCoupon(token, couponId);
 	}
 
 	@PutMapping("/updateCoupon")
-	public RequestEntity<Object> updateCoupon(@RequestParam long compId, @RequestBody Coupon coupon) {
-		return null;
+	public ResponseEntity<Object> updateCoupon(@RequestParam String token, @RequestBody Coupon coupon) {
+		return companyService.updateCoupon(token, coupon);
 	}
 
 	@GetMapping("/getCompany")
-	public RequestEntity<Object> getCompany(@RequestParam long compId) {
-		return null;
+	public ResponseEntity<Object> getCompany(@RequestParam String token) {
+		return companyService.getCompany(token);
 	}
-
 	@GetMapping("/getAllCoupon")
-	public RequestEntity<Object> getAllCoupon(@RequestParam long compId) {
-		return null;
+	public ResponseEntity<Object> getAllCoupon(@RequestParam String token) {
+		return companyService.getAllCoupon(token);
 	}
 
 	@GetMapping("/getCoupon/{couponType}")
-	public RequestEntity<Object> getCouponByType(@RequestParam long compId,@PathVariable CouponType couponType) {
-		return null;
+	public ResponseEntity<Object> getCouponByType(@RequestParam String token,@PathVariable CouponType couponType) {
+		return companyService.getCouponByType(token, couponType);
 	}
 
 	@GetMapping("/getCoupon/{price}")
-	public RequestEntity<Object> getCouponByPrice(@RequestParam long compId,@PathVariable double price) {
-		return null;
+	public ResponseEntity<Object> getCouponByPrice(@RequestParam String token,@PathVariable double price) {
+		return companyService.getCouponByPrice(token, price);
 	}
 
 	@GetMapping("/getCoupon/{localdatetime}")
-	public RequestEntity<Object> getCouponByDate(@RequestParam long compId,@PathVariable LocalDateTime localdatetime) {
-		return null;
+	public ResponseEntity<Object> getCouponByDate(@RequestParam String token,@PathVariable LocalDateTime localdatetime) {
+		return companyService.getCouponByDate(token, localdatetime);
 	}
 }

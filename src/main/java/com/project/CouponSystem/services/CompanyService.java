@@ -114,43 +114,74 @@ public class CompanyService implements CouponClient {
 		
 	}
 
-	public RequestEntity<Object> getCompany(String token) {
+	public ResponseEntity<Object> getCompany(String token) {
 		Company company = companyRepo.findCompanyById(tokens.get(token));
+		if(tokens.containsKey(token)) {
 		if(company != null){
-			
+			return ResponseEntity.ok(company);
+		}else {
+			return ResponseEntity.badRequest().body("Cant find Company");
 		}
-		return null;
+		}else {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
+		}
 	}
 
-	public RequestEntity<Object> getAllCoupon(String token) {
+	public ResponseEntity<Object> getAllCoupon(String token) {
 		Company company = companyRepo.findCompanyById(tokens.get(token));
+		if(tokens.containsKey(token)) {
 		if(company != null){
-			
+		return ResponseEntity.ok(company.getCouponsCollection().toString());
+		}else {
+			return ResponseEntity.badRequest().body("Cant find Company");
 		}
-		return null;
+		}else
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
+		}
 	}
 
-	public RequestEntity<Object> getCouponByType(String token, CouponType couponType) {
+	public ResponseEntity<Object> getCouponByType(String token, CouponType couponType) {
 		Company company = companyRepo.findCompanyById(tokens.get(token));
+		if(tokens.containsKey(token)) {
 		if(company != null){
-			
+			return ResponseEntity.ok(couponRepo.findCouponBycouponType(couponType));
+		}else {
+			return ResponseEntity.badRequest().body("Cant find Company");
 		}
-		return null;
+		}else
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
+		}
 	}
 
-	public RequestEntity<Object> getCouponByPrice(String token, double price) {
+	public ResponseEntity<Object> getCouponByPrice(String token, double price) {
 		Company company = companyRepo.findCompanyById(tokens.get(token));
+		if(tokens.containsKey(token)) {
 		if(company != null){
 			
+			return ResponseEntity.ok(couponRepo.findCouponByprice(price));
+		}else {
+			return ResponseEntity.badRequest().body("Cant find Company");
 		}
-		return null;
+		}else
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
+		}
 	}
 
-	public RequestEntity<Object> getCouponByDate(String token, LocalDateTime localdatetime) {
+	public ResponseEntity<Object> getCouponByDate(String token, LocalDateTime localdatetime) {
 		Company company = companyRepo.findCompanyById(tokens.get(token));
+		if(tokens.containsKey(token)) {
 		if(company != null){
 			
+			return ResponseEntity.ok(couponRepo.findCouponByendDate(localdatetime));
+		}else {
+			return ResponseEntity.badRequest().body("Cant find Company");
 		}
-		return null;
+		}else
+		{
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
+		}
 	}
 }
