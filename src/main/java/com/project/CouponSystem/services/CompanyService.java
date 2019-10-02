@@ -94,12 +94,24 @@ public class CompanyService implements CouponClient {
 		}
 	}
 
-	public RequestEntity<Object> updateCoupon(String token, @RequestBody Coupon coupon) {
+	public ResponseEntity<Object> updateCoupon(String token, @RequestBody Coupon coupon) {
 		Company company = companyRepo.findCompanyById(tokens.get(token));
+		if(tokens.containsKey(token)) {
 		if(company != null){
-			
+			if(coupon !=null) {                        /// key /////   //// old value/////////////////////  /////new value = coupon /////
+				company.getCouponsCollection().replace(coupon.getId(), couponRepo.findCouponById(coupon.getId()),coupon);
+				return ResponseEntity.ok("Coupon Update sucess");
+			}
+			else {
+				return ResponseEntity.badRequest().body("Cant find Coupon");
+			}
 		}
-		return null;
+		else {
+			return ResponseEntity.badRequest().body("Cant find Company");
+		}}else {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
+		}
+		
 	}
 
 	public RequestEntity<Object> getCompany(String token) {
