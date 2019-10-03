@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
 import com.project.CouponSystem.beans.ClientType;
@@ -100,7 +101,7 @@ public class CompanyService implements CouponClient {
 			Optional<Coupon> coupon = couponRepo.findById(couponId);
 			if (company != null) {
 				if (coupon.isPresent()) {
-					if (company.getCouponsCollection() != null && company.getCouponsCollection().size()>0) {
+					if (company.getCouponsCollection() != null && company.getCouponsCollection().size() > 0) {
 						company.getCouponsCollection().remove(company.getId(), couponRepo.findCouponById(couponId));
 						couponRepo.deleteById(couponId);
 						return ResponseEntity.ok("Coupon Delete sucess");
@@ -204,7 +205,7 @@ public class CompanyService implements CouponClient {
 		}
 	}
 
-	// TODO fix method 
+	// TODO fix method
 	public ResponseEntity<Object> getCouponByDate(String token, LocalDateTime localdatetime) {
 		if (tokens.containsKey(token)) {
 			Company company = companyRepo.findCompanyById(tokens.get(token));
@@ -217,4 +218,22 @@ public class CompanyService implements CouponClient {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
 		}
 	}
+
+	public ResponseEntity<?> viewIncome(@RequestParam String token) {
+		if (tokens.containsKey(token)) {
+			Optional<Company> company = companyRepo.findById(tokens.get(token));
+			if (company.isPresent()) {
+				ResponseEntity<String> responseString = restTemplate.getForEntity(
+						"http://localhost:5000/income/viewIncomeByCompany?companyId={companyId}", String.class,
+						company.get().getId());
+				HttpStatus status = responseString.getStatusCode();
+				if (status == HttpStatus.OK) {
+					ResponseEntity.ok(responseString);
+				}
+			}
+			return ResponseEntity.badRequest().body("Cant find Company");
+		}
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
+	}
+
 }

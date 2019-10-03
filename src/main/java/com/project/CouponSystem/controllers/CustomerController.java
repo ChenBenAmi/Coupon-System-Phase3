@@ -39,5 +39,10 @@ public class CustomerController {
 	public ResponseEntity<Object> getHistoryByPrice(@PathVariable String token, @PathVariable double price) {
 		return customerService.getHistoryByPrice(token, price);
 	}
+	
+	@GetMapping("/viewIncome")
+	public ResponseEntity<?> viewIncome(@RequestParam String token) {
+		return customerService.viewIncome(token);
+	}
 
 }

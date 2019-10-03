@@ -3,7 +3,6 @@ package com.project.CouponSystem.controllers;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,5 +60,10 @@ public class CompanyController {
 	@GetMapping("/getCoupon/{localdatetime}")
 	public ResponseEntity<Object> getCouponByDate(@RequestParam String token,@PathVariable LocalDateTime localdatetime) {
 		return companyService.getCouponByDate(token, localdatetime);
+	}
+	
+	@GetMapping("/viewIncome")
+	public ResponseEntity<?> viewIncome(@RequestParam String token) {
+		return companyService.viewIncome(token);
 	}
 }

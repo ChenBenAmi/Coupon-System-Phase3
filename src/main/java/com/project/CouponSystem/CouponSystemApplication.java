@@ -2,6 +2,8 @@ package com.project.CouponSystem;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class CouponSystemApplication {
@@ -11,6 +13,11 @@ public class CouponSystemApplication {
 		System.out.println("Go");
 		
 		//TODO delete thread
+	}
+	
+	@Bean
+	public RestTemplate restTemplate() {
+	    return new RestTemplate();
 	}
 
 }

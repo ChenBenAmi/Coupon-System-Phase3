@@ -5,18 +5,17 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
-
 import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
-
 import com.project.CouponSystem.beans.ClientType;
 import com.project.CouponSystem.beans.Coupon;
 import com.project.CouponSystem.beans.CouponType;
@@ -150,5 +149,23 @@ public class CustomerService implements CouponClient {
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
+	
+	public ResponseEntity<?> viewIncome(@RequestParam String token) {
+		if (tokens.containsKey(token)) {
+			Optional<Customer> customer = customerRepo.findById(tokens.get(token));
+			if (customer.isPresent()) {
+				ResponseEntity<String> responseString = restTemplate.getForEntity(
+						"http://localhost:5000/income/viewIncomeByCustomer?customerId={customerId}", String.class,
+						customer.get().getId());
+				HttpStatus status = responseString.getStatusCode();
+				if (status == HttpStatus.OK) {
+					ResponseEntity.ok(responseString);
+				}
+			}
+			return ResponseEntity.badRequest().body("Cant find Customer");
+		}
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
+	}
+
 
 }
