@@ -11,21 +11,23 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import javassist.expr.NewArray;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Table
+@Data
 public class Customer {
 	
 	private long id;
 	private String customerName;
 	private String password;
 	private Map<Long,Coupon> couponsCollection = new Hashtable<>();
+	private Map<Long, Income> incomeCollection=new Hashtable<>();
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,6 +47,12 @@ public class Customer {
 	public Map<Long, Coupon> getCouponsCollection() {
 		return couponsCollection;
 	}
+	@ManyToMany
+	public Map<Long, Income> getIncomeCollection() {
+		return incomeCollection;
+	}
+	
+	
 	
 	
 	

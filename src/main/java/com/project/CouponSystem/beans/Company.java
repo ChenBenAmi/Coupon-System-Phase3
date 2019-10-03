@@ -25,6 +25,7 @@ public class Company {
 	private String password;
 	private String email;
 	private Map<Long, Coupon> couponsCollection = new Hashtable<>();
+	private Map<Long, Income> incomeCollection=new Hashtable<>();
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -50,6 +51,11 @@ public class Company {
 	@ManyToMany
 	public Map<Long, Coupon> getCouponsCollection() {
 		return couponsCollection;
+	}
+	
+	@ManyToMany
+	public Map<Long, Income> getIncomeCollection() {
+		return incomeCollection;
 	}
 
 }

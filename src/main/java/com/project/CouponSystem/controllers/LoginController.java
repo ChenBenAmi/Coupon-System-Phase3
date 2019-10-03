@@ -41,13 +41,13 @@ public class LoginController {
 	public ResponseEntity<?> logout(@RequestParam String token,@RequestParam ClientType clientType) {
 		switch (clientType) {
 		case ADMIN:
-			return adminService.logout(null);
+			return adminService.logout(token);
 
 		case COMPANY:
-			return companyService.logout(null);
+			return companyService.logout(token);
 
 		case CUSTOMER:
-			return customerService.logout(null);
+			return customerService.logout(token);
 		}
 		return ResponseEntity.badRequest().body("Something went wrong");
 	}

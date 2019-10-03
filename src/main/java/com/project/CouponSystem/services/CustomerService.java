@@ -1,5 +1,6 @@
 package com.project.CouponSystem.services;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -9,13 +10,19 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import com.project.CouponSystem.beans.ClientType;
 import com.project.CouponSystem.beans.Coupon;
 import com.project.CouponSystem.beans.CouponType;
 import com.project.CouponSystem.beans.Customer;
+import com.project.CouponSystem.beans.Income;
+import com.project.CouponSystem.beans.IncomeType;
 import com.project.CouponSystem.repo.CouponRepo;
 import com.project.CouponSystem.repo.CustomerRepo;
 
@@ -27,6 +34,9 @@ public class CustomerService implements CouponClient {
 	private CustomerRepo customerRepo;
 	@Autowired
 	private CouponRepo couponRepo;
+	
+	@Autowired
+	RestTemplate restTemplate;
 
 	private Map<String, Long> tokens = new Hashtable<>();
 
@@ -45,8 +55,11 @@ public class CustomerService implements CouponClient {
 
 	@Override
 	public ResponseEntity<?> logout(String token) {
-		tokens.remove(token);
-		return ResponseEntity.ok("Logged out successfully");
+		if (tokens.containsKey(token)) {
+			tokens.remove(token);
+			return ResponseEntity.ok("Logged out successfully");
+		}
+		return ResponseEntity.badRequest().body("Token Doesnt exist");
 	}
 
 	public ResponseEntity<Object> purchaseCoupon(String token, long couponId) {
@@ -60,11 +73,30 @@ public class CustomerService implements CouponClient {
 						long id = couponRepo.save(coupon).getId();
 						if (customer.getCouponsCollection() != null) {
 							customer.getCouponsCollection().put(id, coupon);
-							return ResponseEntity.ok(customerRepo.save(customer));
+							Income income=new Income();
+							income.setAmount(coupon.getPrice());
+							income.setDate(LocalDateTime.now());
+							income.setName(customer.getCustomerName());
+							income.setDescription(IncomeType.CUSTOMER_PURCHASE);
+							ResponseEntity<Income> response =restTemplate.exchange("http://localhost:5000/income/storeIncome",HttpMethod.POST,null,new ParameterizedTypeReference<Income>() {} );
+							HttpStatus status = response.getStatusCode();
+							if (status==HttpStatus.OK) {
+								Income incomeResponse= response.getBody();
+								if (customer.getIncomeCollection()!=null) {
+									customer.getIncomeCollection().put(incomeResponse.getId(), incomeResponse);
+									return ResponseEntity.ok(customerRepo.save(customer));
+								} else {
+									customer.setIncomeCollection(new Hashtable<>());
+									customer.getIncomeCollection().put(incomeResponse.getId(), incomeResponse);
+									return ResponseEntity.ok(customerRepo.save(customer));
+								}
+							}
 						}
 					}
 				}
+				return ResponseEntity.badRequest().body("Coupon cant be null");
 			}
+			return ResponseEntity.badRequest().body("Cant find Customer");
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}

@@ -42,8 +42,11 @@ public class AdminService implements CouponClient {
 	
 	@Override
 	public ResponseEntity<?> logout(String token) {
-		tokens.remove(token);
-		return ResponseEntity.ok("Logged out successfully");
+		if (tokens.containsKey(token)) {
+			tokens.remove(token);
+			return ResponseEntity.ok("Logged out successfully");
+		}
+		return ResponseEntity.badRequest().body("Token Doesnt exist");
 	}
 
 	@GetMapping("/getAllCompanies")
