@@ -14,7 +14,7 @@ import com.project.CouponSystem.beans.CouponType;
 import com.project.CouponSystem.services.CustomerService;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins ="http://localhost:4200")
 @RequestMapping("/customer")
 public class CustomerController {
 	

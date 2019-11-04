@@ -16,7 +16,7 @@ import com.project.CouponSystem.beans.Customer;
 import com.project.CouponSystem.services.AdminService;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins ="http://localhost:4200")
 @RequestMapping("/admin")
 public class AdminController {
 	
@@ -26,6 +26,7 @@ public class AdminController {
 	
 	@GetMapping("/getAllCompanies")
 	public ResponseEntity<Object> getAllCompanies(@RequestParam String token) {
+		System.out.println(token);
 		return adminService.getAllCompanies(token);
 	}
 	

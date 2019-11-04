@@ -46,7 +46,7 @@ public class CustomerService implements CouponClient {
 			if (customer.getPassword().equalsIgnoreCase(password)) {
 				String token = UUID.randomUUID().toString();
 				tokens.put(token, customer.getId());
-				return ResponseEntity.ok("Logged in as " + clientType.toString() + " your token is: " + token);
+				return ResponseEntity.ok(token);
 			}
 		}
 		return ResponseEntity.badRequest().body("User name or password incorrect");

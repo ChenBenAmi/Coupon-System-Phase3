@@ -19,7 +19,7 @@ import com.project.CouponSystem.beans.CouponType;
 import com.project.CouponSystem.services.CompanyService;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins ="http://localhost:4200")
 @RequestMapping("/company")
 public class CompanyController {
 	@Autowired

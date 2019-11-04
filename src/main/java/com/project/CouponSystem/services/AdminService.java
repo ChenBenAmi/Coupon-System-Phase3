@@ -39,7 +39,7 @@ public class AdminService implements CouponClient {
 			if (password.equalsIgnoreCase("1234")) {
 				String token = UUID.randomUUID().toString();
 				tokens.put(token, 1L);
-				return ResponseEntity.ok("Logged in as " + clientType.toString() + " your token is: " + token);
+				return ResponseEntity.ok(token);
 			}
 		}
 		return ResponseEntity.badRequest().body("User name or password incorrect");
