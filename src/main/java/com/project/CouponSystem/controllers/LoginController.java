@@ -2,6 +2,8 @@ package com.project.CouponSystem.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,7 +13,7 @@ import com.project.CouponSystem.services.CompanyService;
 import com.project.CouponSystem.services.CustomerService;
 
 @RestController
-@RequestMapping("/login")
+@CrossOrigin("http://localhost:4200")
 public class LoginController {
 
 	@Autowired
@@ -23,8 +25,10 @@ public class LoginController {
 	@Autowired
 	private CompanyService companyService;
 
+	@GetMapping("login")
 	public ResponseEntity<?> login(@RequestParam String userName, @RequestParam String password,
 			@RequestParam ClientType clientType) {
+		System.out.println("hey");
 		switch (clientType) {
 		case ADMIN:
 			return adminService.login(userName, password, clientType);
@@ -38,6 +42,7 @@ public class LoginController {
 		return ResponseEntity.badRequest().body("Something went wrong");
 	}
 	
+	@GetMapping("logout")
 	public ResponseEntity<?> logout(@RequestParam String token,@RequestParam ClientType clientType) {
 		switch (clientType) {
 		case ADMIN:

@@ -12,7 +12,6 @@ public class CouponSystemApplication {
 		SpringApplication.run(CouponSystemApplication.class, args);
 		System.out.println("Go");
 		
-		//TODO delete thread
 	}
 	
 	@Bean

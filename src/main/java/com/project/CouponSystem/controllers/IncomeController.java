@@ -2,6 +2,7 @@ package com.project.CouponSystem.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import com.project.CouponSystem.beans.Income;
 import com.project.CouponSystem.services.IncomeService;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/income")
 public class IncomeController {
 
