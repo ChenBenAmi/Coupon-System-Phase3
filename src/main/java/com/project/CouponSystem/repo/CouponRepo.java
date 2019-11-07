@@ -1,6 +1,6 @@
 package com.project.CouponSystem.repo;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,5 +13,5 @@ public interface CouponRepo extends JpaRepository<Coupon,Long> {
 	public Coupon findCouponBytitle(String title);
 	public Coupon findCouponBycouponType(CouponType couponType);
 	public Coupon findCouponByprice(double price);
-	public Coupon findCouponByendDate(LocalDateTime endDate);
+	public Coupon findCouponByendDate(Date endDate);
 }

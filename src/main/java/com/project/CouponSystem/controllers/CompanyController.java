@@ -1,6 +1,7 @@
 package com.project.CouponSystem.controllers;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,19 +50,19 @@ public class CompanyController {
 		return companyService.getAllCoupon(token);
 	}
 
-	@GetMapping("/getCoupon/{couponType}")
-	public ResponseEntity<Object> getCouponByType(@RequestParam String token,@PathVariable CouponType couponType) {
+	@GetMapping("/getCouponByType")
+	public ResponseEntity<Object> getCouponByType(@RequestParam String token,@RequestParam CouponType couponType) {
 		return companyService.getCouponByType(token, couponType);
 	}
 
-	@GetMapping("/getCoupon/{price}")
-	public ResponseEntity<Object> getCouponByPrice(@RequestParam String token,@PathVariable double price) {
+	@GetMapping("/getCouponByPrice")
+	public ResponseEntity<Object> getCouponByPrice(@RequestParam String token,@RequestParam double price) {
 		return companyService.getCouponByPrice(token, price);
 	}
 
-	@GetMapping("/getCoupon/{localdatetime}")
-	public ResponseEntity<Object> getCouponByDate(@RequestParam String token,@PathVariable LocalDateTime localdatetime) {
-		return companyService.getCouponByDate(token, localdatetime);
+	@GetMapping("/getCouponByDate")
+	public ResponseEntity<Object> getCouponByDate(@RequestParam String token,@RequestParam Date date) {
+		return companyService.getCouponByDate(token, date);
 	}
 	
 	@GetMapping("/viewIncome")

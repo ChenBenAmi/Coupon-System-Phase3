@@ -1,6 +1,7 @@
 package com.project.CouponSystem.beans;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,8 +26,8 @@ public class Coupon {
 	
 	private long id;
 	private String title;
-	private LocalDateTime startDate;
-	private LocalDateTime endDate;
+	private Date startDate;
+	private Date endDate;
 	private int amount;
 	private CouponType couponType;
 	private String message;
@@ -43,11 +44,11 @@ public class Coupon {
 		return title;
 	}
 	@Column
-	public LocalDateTime getStartDate() {
+	public Date getStartDate() {
 		return startDate;
 	}
 	@Column
-	public LocalDateTime getEndDate() {
+	public Date getEndDate() {
 		return endDate;
 	}
 	@Column

@@ -54,7 +54,6 @@ public class AdminService implements CouponClient {
 		return ResponseEntity.badRequest().body("Token Doesnt exist");
 	}
 
-	@GetMapping("/getAllCompanies")
 	public ResponseEntity<Object> getAllCompanies(String token) {
 		if (tokens.containsKey(token)) {
 			return ResponseEntity.ok(companyRepo.findAll());
@@ -62,7 +61,6 @@ public class AdminService implements CouponClient {
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
 
-	@GetMapping("/getCompany")
 	public ResponseEntity<Object> getCompany(String token, long companyId) {
 		if (tokens.containsKey(token)) {
 			return ResponseEntity.ok(companyRepo.findCompanyById(companyId));

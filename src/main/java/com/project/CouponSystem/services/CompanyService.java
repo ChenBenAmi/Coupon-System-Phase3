@@ -1,6 +1,7 @@
 package com.project.CouponSystem.services;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Optional;
@@ -206,11 +207,11 @@ public class CompanyService implements CouponClient {
 	}
 
 	// TODO fix method
-	public ResponseEntity<Object> getCouponByDate(String token, LocalDateTime localdatetime) {
+	public ResponseEntity<Object> getCouponByDate(String token, Date date) {
 		if (tokens.containsKey(token)) {
 			Company company = companyRepo.findCompanyById(tokens.get(token));
 			if (company != null) {
-				return ResponseEntity.ok(couponRepo.findCouponByendDate(localdatetime));
+				return ResponseEntity.ok(couponRepo.findCouponByendDate(date));
 			} else {
 				return ResponseEntity.badRequest().body("Cant find Company");
 			}
