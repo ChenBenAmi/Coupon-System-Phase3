@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class Company {
 
 	long id;
-	private String compName;
+	private String companyName;
 	private String password;
 	private String email;
 	private Map<Long, Coupon> couponsCollection = new Hashtable<>();
@@ -34,8 +34,8 @@ public class Company {
 	}
 
 	@Column(unique = true, nullable = false)
-	public String getCompName() {
-		return compName;
+	public String getCompanyName() {
+		return companyName;
 	}
 
 	@Column(nullable = false)

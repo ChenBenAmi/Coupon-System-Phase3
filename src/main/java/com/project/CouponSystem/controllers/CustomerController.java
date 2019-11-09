@@ -32,12 +32,12 @@ public class CustomerController {
 		return customerService.getAllHistory(token);
 	}
 
-	@GetMapping("/hitory/{couponType}")
+	@GetMapping("/getHistoryByType")
 	public ResponseEntity<Object> getHistoryByType(@RequestParam String token, @RequestParam CouponType couponType) {
 		return customerService.getHistoryByType(token, couponType);
 	}
 
-	@GetMapping("/hitory/{price}")
+	@GetMapping("/getHistoryByPrice")
 	public ResponseEntity<Object> getHistoryByPrice(@RequestParam String token, @RequestParam double price) {
 		return customerService.getHistoryByPrice(token, price);
 	}

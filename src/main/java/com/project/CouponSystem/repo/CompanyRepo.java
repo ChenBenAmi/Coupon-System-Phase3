@@ -6,7 +6,7 @@ import com.project.CouponSystem.beans.Company;
 public interface CompanyRepo extends JpaRepository<Company,Long> {
 	
 	public Company findCompanyById(long id);
-	public Company findCompanyBycompName(String compName);
+	public Company findCompanyBycompanyName(String compName);
 	
 
 }

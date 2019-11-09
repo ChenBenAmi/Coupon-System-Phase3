@@ -29,7 +29,7 @@ public class AdminService implements CouponClient {
 	private CompanyRepo companyRepo;
 
 	@Autowired
-	private RestTemplate restTemplate;
+	private IncomeService incomeService;
 
 	private Map<String, Long> tokens = new Hashtable<>();
 
@@ -124,7 +124,7 @@ public class AdminService implements CouponClient {
 		if (tokens.containsKey(token)) {
 			Optional<Customer> cOptional = customerRepo.findById(customerId);
 			if (cOptional.isPresent()) {
-				companyRepo.deleteById(customerId);
+				customerRepo.deleteById(customerId);
 				return ResponseEntity.ok("Customer with id " + customerId + " have been deleted");
 			}
 			return ResponseEntity.badRequest().body("No customer with id " + customerId + " found");
@@ -146,38 +146,21 @@ public class AdminService implements CouponClient {
 
 	public ResponseEntity<?> viewAllIncome(String token) {
 		if (tokens.containsKey(token)) {
-			ResponseEntity<String> responseString = restTemplate
-					.getForEntity("http://localhost:5000/income/viewAllIncome", String.class);
-			HttpStatus status = responseString.getStatusCode();
-			if (status == HttpStatus.OK) {
-				ResponseEntity.ok(responseString);
-			}
-
+			return incomeService.viewAllIncome();
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
 
 	public ResponseEntity<?> viewIncomeByCustomer(String token, long customerId) {
 		if (tokens.containsKey(token)) {
-			ResponseEntity<String> responseString = restTemplate.getForEntity(
-					"http://localhost:5000/income/viewIncomeByCustomer?customerId={customerId}", String.class,
-					customerId);
-			HttpStatus status = responseString.getStatusCode();
-			if (status == HttpStatus.OK) {
-				ResponseEntity.ok(responseString);
-			}
+			return incomeService.viewIncomeByCustomer(customerId);
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
 
 	public ResponseEntity<?> viewIncomeByCompany(String token, long companyId) {
 		if (tokens.containsKey(token)) {
-			ResponseEntity<String> responseString = restTemplate.getForEntity(
-					"http://localhost:5000/income/viewIncomeByCompany?companyId={companyId}", String.class, companyId);
-			HttpStatus status = responseString.getStatusCode();
-			if (status == HttpStatus.OK) {
-				ResponseEntity.ok(responseString);
-			}
+			return incomeService.viewIncomeByCompany(companyId);
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}

@@ -8,15 +8,11 @@ import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
-
 import com.project.CouponSystem.beans.ClientType;
 import com.project.CouponSystem.beans.Company;
 import com.project.CouponSystem.beans.Coupon;
@@ -35,13 +31,13 @@ public class CompanyService implements CouponClient {
 	private CouponRepo couponRepo;
 
 	@Autowired
-	RestTemplate restTemplate;
+	private IncomeService incomeService;
 
 	private Map<String, Long> tokens = new Hashtable<>();
 
 	@Override
 	public ResponseEntity<?> login(String name, String password, ClientType clientType) {
-		Company company = companyRepo.findCompanyBycompName(name);
+		Company company = companyRepo.findCompanyBycompanyName(name);
 		if (company != null) {
 			if (company.getPassword().equalsIgnoreCase(password)) {
 				String token = UUID.randomUUID().toString();
@@ -71,22 +67,16 @@ public class CompanyService implements CouponClient {
 					Income income = new Income();
 					income.setAmount(100);
 					income.setDate(LocalDateTime.now());
-					income.setName(company.getCompName());
+					income.setName(company.getCompanyName());
 					income.setDescription(IncomeType.COMPANY_NEW_COUPON);
-					ResponseEntity<Income> response = restTemplate.exchange("http://localhost:5000/income/storeIncome",
-							HttpMethod.POST, null, new ParameterizedTypeReference<Income>() {
-							});
-					HttpStatus status = response.getStatusCode();
-					if (status == HttpStatus.OK) {
-						Income incomeResponse = response.getBody();
-						if (company.getIncomeCollection() != null) {
-							company.getIncomeCollection().put(incomeResponse.getId(), incomeResponse);
-							return ResponseEntity.ok(companyRepo.save(company));
-						} else {
-							company.setIncomeCollection(new Hashtable<>());
-							company.getIncomeCollection().put(incomeResponse.getId(), incomeResponse);
-							return ResponseEntity.ok(companyRepo.save(company));
-						}
+					Income storedIncome = incomeService.storeIncome(income);
+					if (company.getIncomeCollection() != null) {
+						company.getIncomeCollection().put(storedIncome.getId(), storedIncome);
+						return ResponseEntity.ok(companyRepo.save(company));
+					} else {
+						company.setIncomeCollection(new Hashtable<>());
+						company.getIncomeCollection().put(storedIncome.getId(), storedIncome);
+						return ResponseEntity.ok(companyRepo.save(company));
 					}
 				}
 				return ResponseEntity.badRequest().body("Coupon cant be null");
@@ -127,22 +117,17 @@ public class CompanyService implements CouponClient {
 					Income income = new Income();
 					income.setAmount(10);
 					income.setDate(LocalDateTime.now());
-					income.setName(company.getCompName());
+					income.setName(company.getCompanyName());
 					income.setDescription(IncomeType.COMPANY_UPDATE_COUPON);
-					ResponseEntity<Income> response = restTemplate.exchange("http://localhost:5000/income/storeIncome",
-							HttpMethod.POST, null, new ParameterizedTypeReference<Income>() {
-							});
-					HttpStatus status = response.getStatusCode();
-					if (status == HttpStatus.OK) {
-						Income incomeResponse = response.getBody();
-						if (company.getIncomeCollection() != null) {
-							company.getIncomeCollection().put(incomeResponse.getId(), incomeResponse);
-							return ResponseEntity.ok(companyRepo.save(company));
-						} else {
-							company.setIncomeCollection(new Hashtable<>());
-							company.getIncomeCollection().put(incomeResponse.getId(), incomeResponse);
-							return ResponseEntity.ok(companyRepo.save(company));
-						}
+
+					Income storedIncome = incomeService.storeIncome(income);
+					if (company.getIncomeCollection() != null) {
+						company.getIncomeCollection().put(storedIncome.getId(), storedIncome);
+						return ResponseEntity.ok(companyRepo.save(company));
+					} else {
+						company.setIncomeCollection(new Hashtable<>());
+						company.getIncomeCollection().put(storedIncome.getId(), storedIncome);
+						return ResponseEntity.ok(companyRepo.save(company));
 					}
 				}
 				return ResponseEntity.badRequest().body("Cant find Coupon");
@@ -224,13 +209,7 @@ public class CompanyService implements CouponClient {
 		if (tokens.containsKey(token)) {
 			Optional<Company> company = companyRepo.findById(tokens.get(token));
 			if (company.isPresent()) {
-				ResponseEntity<String> responseString = restTemplate.getForEntity(
-						"http://localhost:5000/income/viewIncomeByCompany?companyId={companyId}", String.class,
-						company.get().getId());
-				HttpStatus status = responseString.getStatusCode();
-				if (status == HttpStatus.OK) {
-					ResponseEntity.ok(responseString);
-				}
+				return incomeService.viewIncomeByCompany(company.get().getId());
 			}
 			return ResponseEntity.badRequest().body("Cant find Company");
 		}

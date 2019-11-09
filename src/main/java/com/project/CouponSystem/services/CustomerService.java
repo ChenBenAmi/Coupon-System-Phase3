@@ -13,6 +13,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
@@ -33,9 +34,8 @@ public class CustomerService implements CouponClient {
 	private CustomerRepo customerRepo;
 	@Autowired
 	private CouponRepo couponRepo;
-	
 	@Autowired
-	RestTemplate restTemplate;
+	private IncomeService incomeService;
 
 	private Map<String, Long> tokens = new Hashtable<>();
 
@@ -72,23 +72,19 @@ public class CustomerService implements CouponClient {
 						long id = couponRepo.save(coupon).getId();
 						if (customer.getCouponsCollection() != null) {
 							customer.getCouponsCollection().put(id, coupon);
-							Income income=new Income();
+							Income income = new Income();
 							income.setAmount(coupon.getPrice());
 							income.setDate(LocalDateTime.now());
 							income.setName(customer.getCustomerName());
 							income.setDescription(IncomeType.CUSTOMER_PURCHASE);
-							ResponseEntity<Income> response =restTemplate.exchange("http://localhost:5000/income/storeIncome",HttpMethod.POST,null,new ParameterizedTypeReference<Income>() {} );
-							HttpStatus status = response.getStatusCode();
-							if (status==HttpStatus.OK) {
-								Income incomeResponse= response.getBody();
-								if (customer.getIncomeCollection()!=null) {
-									customer.getIncomeCollection().put(incomeResponse.getId(), incomeResponse);
-									return ResponseEntity.ok(customerRepo.save(customer));
-								} else {
-									customer.setIncomeCollection(new Hashtable<>());
-									customer.getIncomeCollection().put(incomeResponse.getId(), incomeResponse);
-									return ResponseEntity.ok(customerRepo.save(customer));
-								}
+							Income storedIncome = incomeService.storeIncome(income);
+							if (customer.getIncomeCollection() != null) {
+								customer.getIncomeCollection().put(storedIncome.getId(), storedIncome);
+								return ResponseEntity.ok(customerRepo.save(customer));
+							} else {
+								customer.setIncomeCollection(new Hashtable<>());
+								customer.getIncomeCollection().put(storedIncome.getId(), storedIncome);
+								return ResponseEntity.ok(customerRepo.save(customer));
 							}
 						}
 					}
@@ -104,7 +100,7 @@ public class CustomerService implements CouponClient {
 		if (tokens.containsKey(token)) {
 			Customer customer = customerRepo.findCustomerById(tokens.get(token));
 			if (customer != null) {
-				if(customer.getCouponsCollection()!=null && customer.getCouponsCollection().size()>0) {
+				if (customer.getCouponsCollection() != null && customer.getCouponsCollection().size() > 0) {
 					ResponseEntity.ok(customer.getCouponsCollection());
 				}
 			}
@@ -113,11 +109,11 @@ public class CustomerService implements CouponClient {
 	}
 
 	public ResponseEntity<Object> getHistoryByType(String token, CouponType couponType) {
-		List<Coupon> couponsList=new ArrayList<>();
+		List<Coupon> couponsList = new ArrayList<>();
 		if (tokens.containsKey(token)) {
 			Customer customer = customerRepo.findCustomerById(tokens.get(token));
 			if (customer != null) {
-				if(customer.getCouponsCollection()!=null && customer.getCouponsCollection().size()>0) {
+				if (customer.getCouponsCollection() != null && customer.getCouponsCollection().size() > 0) {
 					for (Map.Entry<Long, Coupon> entry : customer.getCouponsCollection().entrySet()) {
 						if (entry.getValue().getCouponType().equals(couponType)) {
 							couponsList.add(entry.getValue());
@@ -132,13 +128,13 @@ public class CustomerService implements CouponClient {
 	}
 
 	public ResponseEntity<Object> getHistoryByPrice(String token, double price) {
-		List<Coupon> couponsList=new ArrayList<>();
+		List<Coupon> couponsList = new ArrayList<>();
 		if (tokens.containsKey(token)) {
 			Customer customer = customerRepo.findCustomerById(tokens.get(token));
 			if (customer != null) {
-				if(customer.getCouponsCollection()!=null && customer.getCouponsCollection().size()>0) {
+				if (customer.getCouponsCollection() != null && customer.getCouponsCollection().size() > 0) {
 					for (Map.Entry<Long, Coupon> entry : customer.getCouponsCollection().entrySet()) {
-						if (entry.getValue().getPrice()==price) {
+						if (entry.getValue().getPrice() == price) {
 							couponsList.add(entry.getValue());
 						}
 					}
@@ -149,23 +145,18 @@ public class CustomerService implements CouponClient {
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}
-	
+
 	public ResponseEntity<?> viewIncome(@RequestParam String token) {
 		if (tokens.containsKey(token)) {
 			Optional<Customer> customer = customerRepo.findById(tokens.get(token));
 			if (customer.isPresent()) {
-				ResponseEntity<String> responseString = restTemplate.getForEntity(
-						"http://localhost:5000/income/viewIncomeByCustomer?customerId={customerId}", String.class,
-						customer.get().getId());
-				HttpStatus status = responseString.getStatusCode();
-				if (status == HttpStatus.OK) {
-					ResponseEntity.ok(responseString);
-				}
+
+				return incomeService.viewIncomeByCustomer(customer.get().getId());
+
 			}
 			return ResponseEntity.badRequest().body("Cant find Customer");
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
 	}
-
 
 }
