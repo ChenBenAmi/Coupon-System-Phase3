@@ -28,7 +28,6 @@ public class LoginController {
 	@PostMapping("login")
 	public ResponseEntity<?> login(@RequestParam String userName, @RequestParam String password,
 			@RequestParam ClientType clientType) {
-		System.out.println("hey");
 		switch (clientType) {
 		case ADMIN:
 			return adminService.login(userName, password, clientType);

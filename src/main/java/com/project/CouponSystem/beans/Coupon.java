@@ -26,8 +26,8 @@ public class Coupon {
 	
 	private long id;
 	private String title;
-	private Date startDate;
-	private Date endDate;
+	private String startDate;
+	private String endDate;
 	private int amount;
 	private CouponType couponType;
 	private String message;
@@ -44,11 +44,11 @@ public class Coupon {
 		return title;
 	}
 	@Column
-	public Date getStartDate() {
+	public String getStartDate() {
 		return startDate;
 	}
 	@Column
-	public Date getEndDate() {
+	public String getEndDate() {
 		return endDate;
 	}
 	@Column

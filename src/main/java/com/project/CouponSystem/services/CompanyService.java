@@ -1,6 +1,7 @@
 package com.project.CouponSystem.services;
 
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
@@ -21,6 +22,7 @@ import com.project.CouponSystem.beans.Income;
 import com.project.CouponSystem.beans.IncomeType;
 import com.project.CouponSystem.repo.CompanyRepo;
 import com.project.CouponSystem.repo.CouponRepo;
+import com.project.CouponSystem.utils.DateUtils;
 
 @Service
 @Transactional
@@ -62,21 +64,24 @@ public class CompanyService implements CouponClient {
 			Company company = companyRepo.findCompanyById(tokens.get(token));
 			if (company != null) {
 				if (coupon != null) {
+					coupon.setStartDate(DateUtils.formatDate());
 					long id = couponRepo.save(coupon).getId();
 					company.getCouponsCollection().put(id, coupon);
 					Income income = new Income();
 					income.setAmount(100);
-					income.setDate(LocalDateTime.now());
+					income.setDate(DateUtils.formatDate());
 					income.setName(company.getCompanyName());
 					income.setDescription(IncomeType.COMPANY_NEW_COUPON);
 					Income storedIncome = incomeService.storeIncome(income);
 					if (company.getIncomeCollection() != null) {
 						company.getIncomeCollection().put(storedIncome.getId(), storedIncome);
-						return ResponseEntity.ok(companyRepo.save(company));
+						companyRepo.save(company);
+						return ResponseEntity.ok(couponRepo.findById(id));
 					} else {
 						company.setIncomeCollection(new Hashtable<>());
 						company.getIncomeCollection().put(storedIncome.getId(), storedIncome);
-						return ResponseEntity.ok(companyRepo.save(company));
+						companyRepo.save(company);
+						return ResponseEntity.ok(couponRepo.findById(id));
 					}
 				}
 				return ResponseEntity.badRequest().body("Coupon cant be null");
@@ -116,7 +121,7 @@ public class CompanyService implements CouponClient {
 					company.getCouponsCollection().put(coupon.getId(), coupon);
 					Income income = new Income();
 					income.setAmount(10);
-					income.setDate(LocalDateTime.now());
+					income.setDate(DateUtils.formatDate());
 					income.setName(company.getCompanyName());
 					income.setDescription(IncomeType.COMPANY_UPDATE_COUPON);
 

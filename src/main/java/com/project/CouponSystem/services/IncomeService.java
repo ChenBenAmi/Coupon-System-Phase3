@@ -46,7 +46,7 @@ public class IncomeService {
 		if (customer.isPresent()) {
 			customer.get().getIncomeCollection();
 			if (customer.get().getIncomeCollection() != null && customer.get().getIncomeCollection().size() > 0) {
-				return ResponseEntity.ok(customer.get().getIncomeCollection());
+				return ResponseEntity.ok(customer.get().getIncomeCollection().values());
 			}
 		}
 		return ResponseEntity.badRequest().body("No customer with id " + customerId);

@@ -25,6 +25,7 @@ import com.project.CouponSystem.beans.Income;
 import com.project.CouponSystem.beans.IncomeType;
 import com.project.CouponSystem.repo.CouponRepo;
 import com.project.CouponSystem.repo.CustomerRepo;
+import com.project.CouponSystem.utils.DateUtils;
 
 @Service
 @Transactional
@@ -67,6 +68,9 @@ public class CustomerService implements CouponClient {
 			if (customer != null) {
 				Coupon coupon = couponRepo.findCouponById(couponId);
 				if (coupon != null) {
+					if (customer.getCouponsCollection().containsKey(coupon.getId())) {
+						return ResponseEntity.badRequest().body("already purchased");
+					}
 					if (coupon.getAmount() > 0) {
 						coupon.setAmount(coupon.getAmount() - 1);
 						long id = couponRepo.save(coupon).getId();
@@ -74,7 +78,7 @@ public class CustomerService implements CouponClient {
 							customer.getCouponsCollection().put(id, coupon);
 							Income income = new Income();
 							income.setAmount(coupon.getPrice());
-							income.setDate(LocalDateTime.now());
+							income.setDate(DateUtils.formatDate());
 							income.setName(customer.getCustomerName());
 							income.setDescription(IncomeType.CUSTOMER_PURCHASE);
 							Income storedIncome = incomeService.storeIncome(income);
@@ -101,7 +105,7 @@ public class CustomerService implements CouponClient {
 			Customer customer = customerRepo.findCustomerById(tokens.get(token));
 			if (customer != null) {
 				if (customer.getCouponsCollection() != null && customer.getCouponsCollection().size() > 0) {
-					ResponseEntity.ok(customer.getCouponsCollection());
+					return ResponseEntity.ok(customer.getCouponsCollection().values());
 				}
 			}
 		}
@@ -150,13 +154,22 @@ public class CustomerService implements CouponClient {
 		if (tokens.containsKey(token)) {
 			Optional<Customer> customer = customerRepo.findById(tokens.get(token));
 			if (customer.isPresent()) {
-
 				return incomeService.viewIncomeByCustomer(customer.get().getId());
 
 			}
 			return ResponseEntity.badRequest().body("Cant find Customer");
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("please login!");
+	}
+
+	public ResponseEntity<Object> getAllCoupons(String token) {
+		if (token.contains(token)) {
+			List<Coupon> coupons = couponRepo.findAll();
+			if (coupons != null && coupons.size() > 0) {
+				return ResponseEntity.ok(coupons);
+			}
+		}
+		return ResponseEntity.badRequest().body("No coupons in db");
 	}
 
 }

@@ -24,7 +24,7 @@ public class Income {
 
 	private long id;
 	private String name;
-	private LocalDateTime date;
+	private String date;
 	private IncomeType description;
 	private double amount;
 
@@ -40,7 +40,7 @@ public class Income {
 	}
 
 	@Column
-	public LocalDateTime getDate() {
+	public String getDate() {
 		return date;
 	}
 

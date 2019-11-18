@@ -108,7 +108,13 @@ public class AdminService implements CouponClient {
 
 	public ResponseEntity<Object> getCustomer(String token, long customerId) {
 		if (tokens.containsKey(token)) {
-			return ResponseEntity.ok(customerRepo.findCustomerById(customerId));
+			Customer customer=customerRepo.findCustomerById(customerId);
+			if (customer!=null) {
+				return ResponseEntity.ok(customer);
+			} else {
+				return ResponseEntity.badRequest().body("No customer found");
+			}
+			
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Please login");
 	}

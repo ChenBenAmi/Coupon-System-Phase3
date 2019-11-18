@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,14 +21,18 @@ public class CustomerController {
 	
 	@Autowired
 	private CustomerService customerService;
-
-	@PutMapping("/purchaseCoupon")
-	public ResponseEntity<Object> purchaseCoupon(@RequestParam String token, @RequestParam long couponId) {
-		return customerService.purchaseCoupon(token, couponId);
-		
+	
+	@GetMapping("/getAllCoupons")
+	public ResponseEntity<Object> getAllCoupons(@RequestParam String token) {
+		return customerService.getAllCoupons(token);
 	}
 
-	@GetMapping("/history")
+	@GetMapping("/purchaseCoupon")
+	public ResponseEntity<Object> purchaseCoupon(@RequestParam String token, @RequestParam long couponId) {
+		return customerService.purchaseCoupon(token, couponId);
+	}
+
+	@GetMapping("/getAllHistory")
 	public ResponseEntity<Object> getAllHistory(@RequestParam String token) {
 		return customerService.getAllHistory(token);
 	}
